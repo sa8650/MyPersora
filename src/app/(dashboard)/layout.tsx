@@ -1,10 +1,10 @@
 /**
  * Persora — User Console layout.
  *
- * Persistent workspace sidebar (desktop) with the 10 navigation modules.
- * Requires an authenticated session (validated against D1). Unauthenticated
- * requests are redirected to /login. Force-dynamic: user data is never
- * statically prerendered.
+ * Persistent workspace sidebar (desktop) + drawer navigation (mobile).
+ * Requires an authenticated session; the session is validated against D1 on
+ * every request, so a deleted/expired session cannot keep rendering the
+ * workspace. Unauthenticated requests are redirected to /login.
  */
 
 import { redirect } from "next/navigation";
@@ -23,21 +23,11 @@ export default async function DashboardLayout({
   noStore();
 
   const env = getEnv();
-  let user: { id: string; email: string; name: string | null; role: string } | null = null;
-
-  if (env) {
-    user = await getCurrentUser(env);
-  }
+  const user = env ? await getCurrentUser(env) : null;
 
   if (!user) {
     redirect("/login");
   }
 
-  return (
-    <WorkspaceShell user={user}>
-      <main className="flex-1 h-full overflow-y-auto bg-workspace p-6">
-        {children}
-      </main>
-    </WorkspaceShell>
-  );
+  return <WorkspaceShell user={user}>{children}</WorkspaceShell>;
 }

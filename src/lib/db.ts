@@ -16,7 +16,7 @@ interface D1PreparedStatement {
   bind(...params: unknown[]): D1PreparedStatement;
   run(): Promise<D1Result>;
   all<T = unknown>(): Promise<{ results: T[]; meta?: unknown }>;
-  first(): Promise<Record<string, unknown> | null>;
+  first<T = Record<string, unknown>>(): Promise<T | null>;
 }
 
 interface D1Database {
@@ -35,7 +35,14 @@ interface R2Bucket {
 export interface PersoraEnv {
   DB: D1Database;
   R2_BUCKET: R2Bucket;
+  /** Signing / encryption key material. Required for field-level encryption. */
   SESSION_SECRET: string;
+  /** Absolute URL of the deployment, used in e-mails (e.g. reset links). */
+  NEXT_PUBLIC_APP_URL?: string;
+  /** Transactional e-mail provider key (Resend). Optional — see lib/email.ts. */
+  RESEND_API_KEY?: string;
+  /** From address for transactional e-mail. */
+  EMAIL_FROM?: string;
 }
 
 /** Run a parameterised D1 query and return the first row's columns array. */

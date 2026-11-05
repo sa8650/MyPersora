@@ -6,6 +6,7 @@ import type { PersoraEnv } from "@/lib/db";
 
 
 import { withAuth } from "@/lib/api";
+import { encryptSecret, encryptionAvailable } from "@/lib/crypto";
 import { z } from "zod";
 
 const cardSchema = z.object({
@@ -32,13 +33,21 @@ async function createHandler(request: Request, user: { id: string }, env: Persor
   }
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
-  const { card_number, ...rest } = parsed.data;
+  const { card_number, cvv, ...rest } = parsed.data;
+  if (!encryptionAvailable(env)) {
+    return Response.json(
+      { error: "Sensitive fields cannot be stored: SESSION_SECRET is not configured on this Worker." },
+      { status: 503 },
+    );
+  }
   const last4 = card_number.replace(/\D/g, "").slice(-4);
-  // NOTE: In production, encrypt card_number/cvv with a key from SESSION_SECRET / a dedicated R2 encryption key before storing.
+  // Stored as AES-GCM ciphertext (v1:…) — never plaintext.
+  const cardNumberEncrypted = await encryptSecret(env, card_number.replace(/\D/g, ""));
+  const cvvEncrypted = cvv ? await encryptSecret(env, cvv) : null;
   await env.DB.prepare(
     `INSERT INTO wallet_cards (id, user_id, cardholder_name, card_number_encrypted, card_number_last4, brand, expiry_month, expiry_year, cvv_encrypted, currency, type, balance, is_active, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1, ?, ?)`
-  ).bind(id, user.id, rest.cardholder_name ?? null, card_number, last4, rest.brand ?? null, rest.expiry_month, rest.expiry_year, rest.cvv ?? null, rest.currency, rest.type, now, now).run();
+  ).bind(id, user.id, rest.cardholder_name ?? null, cardNumberEncrypted, last4, rest.brand ?? null, rest.expiry_month, rest.expiry_year, cvvEncrypted, rest.currency, rest.type, now, now).run();
   return Response.json({ id, user_id: user.id, card_number_last4: last4, ...rest, created_at: now, updated_at: now }, { status: 201 });
 }
 

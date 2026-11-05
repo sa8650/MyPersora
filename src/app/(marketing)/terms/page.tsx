@@ -1,41 +1,89 @@
 /**
- * Persora — Terms of Service page
+ * Persora — Terms of Service (/terms).
  */
+
+import { PageShell, Section } from "@/components/marketing/page-shell";
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground px-4 py-12 sm:px-6 lg:px-8 max-w-3xl mx-auto">
-      <nav className="mb-8 flex items-center gap-1 text-caption-2-medium text-muted-foreground">
-        <span className="text-muted-foreground">Home</span>
-        <span>/</span>
-        <span className="text-foreground">Terms of Service</span>
-      </nav>
-      <h1 className="text-display-4-bold text-foreground mb-8">Terms of Service</h1>
-      <p className="text-body-medium text-foreground mb-6 leading-relaxed">
-        Effective date: November 3, 2026. These terms govern your use of Persora,
-        the personal management platform.
-      </p>
-      <h2 className="text-title-2-semibold text-foreground mb-3">Acceptance of terms</h2>
-      <p className="text-body-medium text-foreground mb-6 leading-relaxed">
-        By creating an account or using Persora, you agree to these terms. If you
-        do not agree, you may not use the service.
-      </p>
-      <h2 className="text-title-2-semibold text-foreground mb-3">User accounts</h2>
-      <p className="text-body-medium text-foreground mb-6 leading-relaxed">
-        You are responsible for maintaining the confidentiality of your account
-        credentials and for all activity under your account. Authentication is
-        application-managed; we do not use third-party sign-in providers.
-      </p>
-      <h2 className="text-title-2-semibold text-foreground mb-3">Data ownership</h2>
-      <p className="text-body-medium text-foreground mb-6 leading-relaxed">
-        You retain ownership of the data you enter into Persora. You may export or
-        delete your data at any time through your workspace settings.
-      </p>
-      <h2 className="text-title-2-semibold text-foreground mb-3">Limitation of liability</h2>
-      <p className="text-body-medium text-foreground mb-6 leading-relaxed">
-        Persora is provided "as is" without warranties of any kind. To the extent
-        permitted by law, we are not liable for indirect or consequential damages.
-      </p>
-    </div>
+    <PageShell
+      title="Terms of Service"
+      description="The terms that apply to your use of a Persora deployment. Last updated 5 November 2026."
+      breadcrumb={[{ label: "Terms of Service" }]}
+    >
+      <Section title="1. Acceptance">
+        <p>
+          By creating an account or using Persora you agree to these terms. If you do not
+          agree, do not use the application.
+        </p>
+      </Section>
+
+      <Section title="2. Your account">
+        <ul className="list-disc space-y-2 pl-5">
+          <li>You must provide an accurate e-mail address and keep your password secret.</li>
+          <li>You are responsible for activity performed with your session.</li>
+          <li>One person per account; accounts may not be shared or resold.</li>
+          <li>
+            Administrator access is granted by an existing administrator. It is never
+            granted automatically by registration.
+          </li>
+        </ul>
+      </Section>
+
+      <Section title="3. Acceptable use">
+        <p>You agree not to:</p>
+        <ul className="list-disc space-y-2 pl-5">
+          <li>Use the service to store or distribute unlawful material.</li>
+          <li>Store other people&apos;s credentials or payment data without authorisation.</li>
+          <li>Attempt to access another account, probe the database or bypass access controls.</li>
+          <li>Interfere with the availability of the deployment, for example by automated flooding.</li>
+        </ul>
+      </Section>
+
+      <Section title="4. Your content">
+        <p>
+          You keep ownership of the records you create. You are responsible for their
+          lawfulness and accuracy. Deleting a record in a module removes it from the
+          database for your account.
+        </p>
+      </Section>
+
+      <Section title="5. Availability and changes">
+        <p>
+          Persora is provided as-is. Features may change, and modules that are documented
+          as planned but not implemented are not part of the service. The operator may
+          suspend a deployment for maintenance or security reasons.
+        </p>
+      </Section>
+
+      <Section title="6. Security expectations">
+        <p>
+          Persora hashes passwords, encrypts sensitive fields and validates sessions on
+          every request, but no service can guarantee absolute security. Report suspected
+          vulnerabilities through the contact form rather than testing them against other
+          users&apos; data.
+        </p>
+      </Section>
+
+      <Section title="7. Termination">
+        <p>
+          You may stop using Persora at any time and sign out to revoke your session. The
+          operator may suspend accounts that violate these terms or endanger the
+          deployment.
+        </p>
+      </Section>
+
+      <Section title="8. Liability">
+        <p>
+          To the extent permitted by law, the operator is not liable for indirect or
+          consequential loss arising from use of the application, including loss of data
+          stored in a self-managed deployment.
+        </p>
+      </Section>
+
+      <Section title="9. Contact">
+        <p>Questions about these terms can be sent through the public contact form.</p>
+      </Section>
+    </PageShell>
   );
 }

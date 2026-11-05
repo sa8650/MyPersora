@@ -6,11 +6,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:cf": "next build && opennextjs-cloudflare build && node scripts/patch-worker.js",
+    "build:cf": "opennextjs-cloudflare build && node scripts/patch-worker.js",
     "start": "next start",
     "lint": "eslint",
     "deploy": "wrangler deploy",
-    "preview": "wrangler dev"
+    "preview": "wrangler dev",
+    "db:migrate:local": "wrangler d1 execute persora-db --local --file=./migrations/schema.sql && wrangler d1 execute persora-db --local --file=./migrations/002_recovery_contact.sql",
+    "db:migrate:remote": "wrangler d1 execute persora-db --remote --file=./migrations/schema.sql && wrangler d1 execute persora-db --remote --file=./migrations/002_recovery_contact.sql",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.1",
@@ -38,7 +41,6 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.91.0",
     "tailwind-merge": "^3.7.0",
-    "wrangler": "^4.148.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -49,6 +51,7 @@
     "eslint": "^9",
     "eslint-config-next": "^15.5.29",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.148.0"
   }
 }

@@ -43,11 +43,15 @@ async function patch() {
   const replacement = ASSET_SERVING_BLOCK + `            // - \`Request\`s are handled by the Next server\n            const reqOrResp = await middlewareHandler(request, env, ctx);`;
 
   if (!content.includes(target)) {
-    console.error(
-      "[persora] Could not find expected target block in worker.js. " +
-        "The adapter output may have changed. Manual patching required.",
+    // Non-fatal on purpose: Cloudflare's asset layer already serves
+    // .open-next/assets/_next/static/* when [assets] is configured in
+    // wrangler.toml, so a changed adapter output must not break a deploy.
+    console.warn(
+      "[persora] Could not find the expected target block in worker.js — " +
+        "the adapter output has changed. Skipping the asset-serving patch " +
+        "(assets are still served by the [assets] binding).",
     );
-    process.exit(1);
+    return;
   }
 
   const updated = content.replace(target, replacement);

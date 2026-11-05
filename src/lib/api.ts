@@ -9,7 +9,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { PersoraEnv } from "@/lib/db";
 import { getEnv } from "@/lib/context";
-import { getCurrentUser, requireAdmin, type PersoraUser } from "@/lib/auth";
+import { getCurrentUser, type PersoraUser } from "@/lib/auth";
 
 type ResolvedParams = { [key: string]: string };
 
@@ -38,12 +38,9 @@ export function withAuth(handler: InnerHandler) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const rawParams = await context.params;
-    const resolvedParams: ResolvedParams = {};
-    for (const [key, value] of Object.entries(rawParams)) {
-      resolvedParams[String(key)] = String(value);
-    }
-    return handler(request, user, env as PersoraEnv, { params: resolvedParams });
+    return handler(request, user, env as PersoraEnv, {
+      params: await resolveParams(context),
+    });
   };
 }
 
@@ -57,17 +54,35 @@ export function withAdmin(handler: InnerHandler) {
     if (!env) {
       return NextResponse.json({ error: "Configuration unavailable" }, { status: 500 });
     }
-    const user = await requireAdmin(env);
+    // Resolve the session first so an unauthenticated caller gets 401 and a
+    // signed-in non-admin gets 403 — `requireAdmin()` throws, which surfaced
+    // as an unhandled 500 from every /api/admin/* endpoint.
+    const user = await getCurrentUser(env);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const rawParams = await context.params;
-    const resolvedParams: ResolvedParams = {};
-    for (const [key, value] of Object.entries(rawParams)) {
-      resolvedParams[String(key)] = String(value);
+    if (user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-    return handler(request, user, env as PersoraEnv, { params: resolvedParams });
+    return handler(request, user, env as PersoraEnv, {
+      params: await resolveParams(context),
+    });
   };
+}
+
+/**
+ * Route handlers without a dynamic segment (e.g. /api/contacts) receive
+ * `context.params === undefined`. Calling Object.entries() on that threw a
+ * TypeError, so every collection endpoint answered 500. Always resolve to an
+ * object.
+ */
+async function resolveParams(context: RouteContext | undefined): Promise<ResolvedParams> {
+  const rawParams = (await context?.params) ?? {};
+  const resolved: ResolvedParams = {};
+  for (const [key, value] of Object.entries(rawParams)) {
+    resolved[String(key)] = String(value);
+  }
+  return resolved;
 }
 
 /** Parse JSON body or return 400. */

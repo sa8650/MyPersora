@@ -6,6 +6,7 @@ import type { PersoraEnv } from "@/lib/db";
 
 
 import { withAuth } from "@/lib/api";
+import { encryptSecret, encryptionAvailable } from "@/lib/crypto";
 import { z } from "zod";
 
 const accountSchema = z.object({
@@ -33,11 +34,19 @@ async function createHandler(request: Request, user: { id: string }, env: Persor
   const id = crypto.randomUUID();
   const now = new Date().toISOString();
   const { password, username, ...rest } = parsed.data;
-  // NOTE: Encrypt username/password with a key bound to SESSION_SECRET before storing in production.
+  if ((password || username) && !encryptionAvailable(env)) {
+    return Response.json(
+      { error: "Credentials cannot be stored: SESSION_SECRET is not configured on this Worker." },
+      { status: 503 },
+    );
+  }
+  // Stored as AES-GCM ciphertext (v1:…) — never plaintext.
+  const usernameEncrypted = username ? await encryptSecret(env, username) : null;
+  const passwordEncrypted = password ? await encryptSecret(env, password) : null;
   await env.DB.prepare(
     `INSERT INTO accounts (id, user_id, type, provider_name, account_name, account_number_masked, username_encrypted, password_encrypted, url, notes, is_active, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`
-  ).bind(id, user.id, rest.type, rest.provider_name, rest.account_name ?? null, rest.account_number_masked ?? null, username ?? null, password ?? null, rest.url || null, rest.notes ?? null, now, now).run();
+  ).bind(id, user.id, rest.type, rest.provider_name, rest.account_name ?? null, rest.account_number_masked ?? null, usernameEncrypted, passwordEncrypted, rest.url || null, rest.notes ?? null, now, now).run();
   return Response.json({ id, user_id: user.id, ...rest, created_at: now, updated_at: now }, { status: 201 });
 }
 

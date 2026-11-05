@@ -99,13 +99,13 @@ export default function OverviewPage() {
 
       <div className="grid gap-6 md:grid-cols-3">
         {[
-          { label: "Habit Tracker", href: "/dashboard/habit-tracker", icon: Activity, desc: "Build and track daily routines." },
-          { label: "Contacts Manager", href: "/dashboard/contacts", icon: Users, desc: "Google Contacts-style address book." },
-          { label: "Wallet Cards", href: "/dashboard/wallet", icon: CreditCard, desc: "Securely saved payment cards." },
-          { label: "URL Manager", href: "/dashboard/urls", icon: Link, desc: "Organize your bookmarks." },
-          { label: "Account Manager", href: "/dashboard/accounts", icon: Banknote, desc: "Internet and bank records." },
-          { label: "Subscriptions", href: "/dashboard/subscriptions", icon: Tag, desc: "Recurring billing overview." },
-          { label: "Purchases & Warranty", href: "/dashboard/purchases", icon: ShoppingCart, desc: "Track purchases and warranties." },
+          { label: "Habit Tracker", href: "/habit-tracker", icon: Activity, desc: "Build and track daily routines." },
+          { label: "Contacts Manager", href: "/contacts", icon: Users, desc: "Google Contacts-style address book." },
+          { label: "Wallet Cards", href: "/wallet", icon: CreditCard, desc: "Securely saved payment cards." },
+          { label: "URL Manager", href: "/urls", icon: Link, desc: "Organize your bookmarks." },
+          { label: "Account Manager", href: "/accounts", icon: Banknote, desc: "Internet and bank records." },
+          { label: "Subscriptions", href: "/subscriptions", icon: Tag, desc: "Recurring billing overview." },
+          { label: "Purchases & Warranty", href: "/purchases", icon: ShoppingCart, desc: "Track purchases and warranties." },
         ].map((module) => (
           <Card key={module.label} className="reui-card hover:shadow-md transition-shadow cursor-pointer" onClick={() => { window.location.href = module.href; }} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === "Enter") window.location.href = module.href; }}>
             <CardHeader className="pb-3">

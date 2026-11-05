@@ -8,242 +8,379 @@ import {
   CreditCard,
   Link as LinkIcon,
   Banknote,
-  RefreshCcw,
   Tag,
   ShoppingCart,
-  User,
+  User as UserIcon,
   Settings,
   LogOut,
-  ChevronLeft,
   Menu,
+  X,
+  Shield,
+  Database,
+  FileText,
+  ListChecks,
+  ArrowLeftRight,
+  ExternalLink,
 } from "lucide-react";
 import NextLink from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
+export interface ShellUser {
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string | null;
+}
+
 interface NavItem {
   href: string;
   label: string;
   icon: React.ElementType;
+  description?: string;
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/habit-tracker", label: "Habit Tracker", icon: Activity },
-  { href: "/dashboard/contacts", label: "Contacts Manager", icon: Users },
-  { href: "/dashboard/wallet", label: "Wallet Cards", icon: CreditCard },
-  { href: "/dashboard/urls", label: "URL Manager", icon: LinkIcon },
-  { href: "/dashboard/accounts", label: "Account Manager", icon: Banknote },
-  { href: "/dashboard/subscriptions", label: "Subscription Manager", icon: Tag },
-  { href: "/dashboard/purchases", label: "Purchases & Warranty", icon: ShoppingCart },
-  { href: "/dashboard/profile", label: "Profile & Settings", icon: Settings },
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+/* -------------------------------------------------------------------------- */
+/*  User workspace navigation                                                 */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Navigation groups for the user workspace. Every href below maps to a route
+ * that exists in `src/app/(dashboard)/` — keep them in sync when adding a
+ * module (route groups do not add a URL segment, so `(dashboard)/wallet`
+ * is served at `/wallet`, not `/dashboard/wallet`).
+ */
+export const USER_NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Workspace",
+    items: [
+      { href: "/overview", label: "Overview", icon: LayoutDashboard },
+      { href: "/profile", label: "Profiles & Settings", icon: UserIcon },
+    ],
+  },
+  {
+    label: "Personal",
+    items: [
+      { href: "/habit-tracker", label: "Habit Tracker", icon: Activity },
+      { href: "/contacts", label: "Contacts Manager", icon: Users },
+    ],
+  },
+  {
+    label: "Finance",
+    items: [
+      { href: "/wallet", label: "Wallet Cards", icon: CreditCard },
+      { href: "/accounts", label: "Accounts Manager", icon: Banknote },
+      { href: "/subscriptions", label: "Subscriptions", icon: Tag },
+      { href: "/purchases", label: "Purchases & Warranty", icon: ShoppingCart },
+    ],
+  },
+  {
+    label: "Bookmarks",
+    items: [{ href: "/urls", label: "URL Manager", icon: LinkIcon }],
+  },
 ];
 
-interface SidebarProps {
-  className?: string;
-  user?: { name?: string | null; email?: string | null; role?: string | null } | null;
+/* -------------------------------------------------------------------------- */
+/*  Admin console navigation                                                  */
+/* -------------------------------------------------------------------------- */
+
+export const ADMIN_NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Administration",
+    items: [
+      { href: "/admin", label: "Overview", icon: LayoutDashboard },
+      { href: "/admin/users", label: "User Management", icon: Users },
+      { href: "/admin/roles", label: "Roles & Access", icon: Shield },
+      { href: "/admin/features", label: "Features & Modules", icon: ListChecks },
+    ],
+  },
+  {
+    label: "Platform",
+    items: [
+      { href: "/admin/storage", label: "Database & R2 Storage", icon: Database },
+      { href: "/admin/content", label: "Public Website", icon: FileText },
+      { href: "/admin/settings", label: "Platform Settings", icon: Settings },
+    ],
+  },
+];
+
+/** Flat list kept for backwards compatibility with older imports. */
+export const ADMIN_NAV_ITEMS: NavItem[] = ADMIN_NAV_GROUPS.flatMap((g) => g.items);
+export const USER_NAV_ITEMS: NavItem[] = USER_NAV_GROUPS.flatMap((g) => g.items);
+
+function isActive(pathname: string, href: string): boolean {
+  if (href === "/admin") return pathname === "/admin";
+  if (href === "/overview") return pathname === "/overview";
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Sidebar({
-  className,
-  user,
-}: SidebarProps) {
-  const pathname = usePathname();
-  const router = useRouter();
+/* -------------------------------------------------------------------------- */
+/*  Shared shell pieces                                                       */
+/* -------------------------------------------------------------------------- */
 
-  async function handleLogout() {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      // Ignore network errors; still navigate to login.
-    }
-    router.replace("/login");
-  }
-
+function Brand({ badge, label, homeHref }: { badge: string; label: string; homeHref: string }) {
   return (
-    <aside
-      className={cn(
-        "fixed inset-y-0 left-0 z-30 h-full w-64 bg-sidebar text-sidebar-foreground border-r border-border transition-all duration-300 shadow-lg",
-        "-translate-x-full sm:translate-x-0",
-        className,
-      )}
-      aria-label="Workspace navigation"
+    <NextLink
+      href={homeHref}
+      className="flex items-center gap-2 h-14 px-5 border-b border-border shrink-0"
+      aria-label={`${label} home`}
     >
-      <div className="flex h-full flex-col">
-        {/* Brand */}
-        <div className="flex items-center gap-2 h-12 px-6 border-b border-border">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <span className="text-headline-bold">P</span>
-          </div>
-          <span className="text-title-2-semibold tracking-tight">Persora</span>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
-          {NAV_ITEMS.map((item) => {
-            const active = pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <NextLink
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-sidebar-foreground hover:bg-accent hover:text-accent-foreground",
-                )}
-                aria-current={active ? "page" : undefined}
-              >
-                <Icon className="h-5 w-5" aria-hidden="true" />
-                {item.label}
-              </NextLink>
-            );
-          })}
-        </nav>
-
-        {/* Footer: user + logout */}
-        <div className="p-4 border-t border-border">
-          {user ? (
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-secondary overflow-hidden">
-                  {user.name ? (
-                    <span className="flex h-full w-full items-center justify-center text-body-medium font-medium">
-                      {user.name.charAt(0).toUpperCase()}
-                    </span>
-                  ) : (
-                    <span className="flex h-full w-full items-center justify-center text-body-medium">
-                      U
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <p className="text-body-medium font-medium truncate">{user.name}</p>
-                  {user.email && (
-                    <p className="text-caption-2-medium text-muted-foreground truncate">{user.email}</p>
-                  )}
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                className="w-full"
-              >
-                <LogOut className="h-4 w-4 mr-2" aria-hidden="true" />
-                Logout
-              </Button>
-            </div>
-          ) : (
-            <Button variant="outline" size="sm" className="w-full">
-              Sign in
-            </Button>
-          )}
-        </div>
-      </div>
-    </aside>
+      <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
+        <span className="text-headline-bold">{badge}</span>
+      </span>
+      <span className="text-title-2-semibold tracking-tight">{label}</span>
+    </NextLink>
   );
 }
 
-/**
- * Desktop-only persistent sidebar wrapper. Mobile handling is delegated to
- * the shell layout which renders a bottom sheet / drawer for small viewports.
- */
-export function WorkspaceShell({
-  children,
-  user,
-}: {
-  children: React.ReactNode;
-  user?: { name?: string | null; email?: string | null; role?: string | null } | null;
-}) {
+function NavList({ groups, pathname }: { groups: NavGroup[]; pathname: string }) {
   return (
-    <div className="flex h-screen w-full bg-workspace text-workspace-foreground">
-      <Sidebar user={user} />
-      <div className="flex-1 overflow-hidden">
-        {children}
+    <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5" aria-label="Main navigation">
+      {groups.map((group) => (
+        <div key={group.label}>
+          <p className="px-3 pb-1.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-muted-foreground">
+            {group.label}
+          </p>
+          <div className="space-y-1">
+            {group.items.map((item) => {
+              const active = isActive(pathname, item.href);
+              const Icon = item.icon;
+              return (
+                <NextLink
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-sidebar-foreground hover:bg-accent hover:text-accent-foreground",
+                  )}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <Icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+                  <span className="truncate">{item.label}</span>
+                </NextLink>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+function UserCard({
+  user,
+  onLogout,
+  extra,
+}: {
+  user: ShellUser | null | undefined;
+  onLogout: () => void;
+  extra?: React.ReactNode;
+}) {
+  if (!user) {
+    return (
+      <div className="p-4 border-t border-border">
+        <Button asChild variant="outline" size="sm" className="w-full">
+          <NextLink href="/login">Sign in</NextLink>
+        </Button>
+      </div>
+    );
+  }
+
+  const name = user.name?.trim() || user.email || "Account";
+  const initial = name.charAt(0).toUpperCase();
+
+  return (
+    <div className="p-3 border-t border-border space-y-2">
+      {extra}
+      <div className="flex items-center gap-3 rounded-lg px-2 py-1.5">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-body-medium font-semibold">
+          {initial}
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-body-medium font-medium">{name}</p>
+          {user.email && (
+            <p className="truncate text-caption-2-medium text-muted-foreground">{user.email}</p>
+          )}
+        </div>
+      </div>
+      <Button variant="outline" size="sm" onClick={onLogout} className="w-full justify-start">
+        <LogOut className="h-4 w-4 mr-2" aria-hidden="true" />
+        Logout
+      </Button>
+    </div>
+  );
+}
+
+function useLogout() {
+  const router = useRouter();
+  return React.useCallback(async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // Ignore network errors; still navigate away from the workspace.
+    }
+    router.replace("/login");
+    router.refresh();
+
+  }, [router]);
+}
+
+function ShellFrame({
+  user,
+  children,
+  groups,
+  brand,
+  footerExtra,
+  mobileTitle,
+  desktopOffset = "lg:pl-64",
+}: {
+  user: ShellUser | null | undefined;
+  children: React.ReactNode;
+  groups: NavGroup[];
+  brand: { badge: string; label: string; homeHref: string };
+  footerExtra?: React.ReactNode;
+  mobileTitle: string;
+  desktopOffset?: string;
+}) {
+  const pathname = usePathname() || "/";
+  const [open, setOpen] = React.useState(false);
+  const handleLogout = useLogout();
+
+  // Close the mobile drawer whenever the route changes.
+  React.useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  return (
+    <div className="flex min-h-screen w-full bg-workspace text-workspace-foreground">
+      {/* Mobile top bar */}
+      <header className="lg:hidden fixed inset-x-0 top-0 z-40 flex h-14 items-center gap-2 border-b border-border bg-sidebar px-3 text-sidebar-foreground">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setOpen(true)}
+          aria-label="Open navigation"
+          aria-expanded={open}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <span className="text-body-medium font-semibold">{mobileTitle}</span>
+      </header>
+
+      {/* Mobile drawer */}
+      {open && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <button
+            className="absolute inset-0 bg-black/40"
+            aria-label="Close navigation"
+            onClick={() => setOpen(false)}
+          />
+          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col bg-sidebar text-sidebar-foreground shadow-xl">
+            <div className="flex items-center justify-between border-b border-border pr-2">
+              <Brand {...brand} />
+              <Button variant="ghost" size="icon" onClick={() => setOpen(false)} aria-label="Close navigation">
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <NavList groups={groups} pathname={pathname} />
+            <UserCard user={user} onLogout={handleLogout} extra={footerExtra} />
+          </div>
+        </div>
+      )}
+
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 z-30 w-64 flex-col border-r border-border bg-sidebar text-sidebar-foreground">
+        <Brand {...brand} />
+        <NavList groups={groups} pathname={pathname} />
+        <UserCard user={user} onLogout={handleLogout} extra={footerExtra} />
+      </aside>
+
+      {/* Content */}
+      <div className={cn("flex-1 min-w-0 pt-14 lg:pt-0", desktopOffset)}>
+        <main className="mx-auto h-full w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          {children}
+        </main>
       </div>
     </div>
   );
 }
 
-/**
- * Admin Console navigation items.
- */
-export const ADMIN_NAV_ITEMS: NavItem[] = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/users", label: "User Management", icon: Users },
-  { href: "/admin/roles", label: "Roles & Access", icon: ShieldIcon },
-  { href: "/admin/features", label: "Features & Modules", icon: Activity },
-  { href: "/admin/storage", label: "Database & R2 Storage", icon: DatabaseIcon },
-  { href: "/admin/content", label: "Public Website Content", icon: FileTextIcon },
-  { href: "/admin/settings", label: "Platform Settings", icon: Settings },
-];
+/* -------------------------------------------------------------------------- */
+/*  Public shells                                                             */
+/* -------------------------------------------------------------------------- */
 
-function ShieldIcon() {
+export function WorkspaceShell({
+  children,
+  user,
+  className,
+}: {
+  children: React.ReactNode;
+  user?: ShellUser | null;
+  className?: string;
+}) {
+  const isAdmin = user?.role === "admin";
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
-  );
-}
-function DatabaseIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="22" height="12" x="1" y="10" rx="2" ry="2"/><path d="M1 14h22"/><path d="M4 18h16"/><path d="M1 10h22"/><path d="M4 14h16"/></svg>
-  );
-}
-function FileTextIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 16 15 16 9"/></svg>
-  );
-}
-
-export function AdminSidebar({ className, onLogout }: { className?: string; onLogout?: () => void }) {
-  const pathname = usePathname();
-  return (
-    <aside
-      className={cn(
-        "fixed inset-y-0 left-0 z-30 h-full w-64 bg-sidebar text-sidebar-foreground border-r border-border transition-all duration-300 shadow-lg",
-        "-translate-x-full sm:translate-x-0",
-        className,
-      )}
-      aria-label="Admin navigation"
+    <ShellFrame
+      user={user}
+      groups={USER_NAV_GROUPS}
+      brand={{ badge: "P", label: "Persora", homeHref: "/overview" }}
+      mobileTitle="Persora"
+      footerExtra={
+        isAdmin ? (
+          <NextLink
+            href="/admin"
+            className="flex items-center gap-2 rounded-lg px-2 py-2 text-body-medium font-medium text-primary hover:bg-accent"
+          >
+            <Shield className="h-4 w-4" aria-hidden="true" />
+            Admin console
+            <ExternalLink className="h-3.5 w-3.5 opacity-60" aria-hidden="true" />
+          </NextLink>
+        ) : null
+      }
+      {...{}}
     >
-      <div className="flex h-full flex-col">
-        <div className="flex items-center gap-2 h-12 px-6 border-b border-border">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <span className="text-headline-bold">A</span>
-          </div>
-          <span className="text-title-2-semibold tracking-tight">Persora Admin</span>
-        </div>
-        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
-          {ADMIN_NAV_ITEMS.map((item) => {
-            const active = pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <NextLink
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-sidebar-foreground hover:bg-accent hover:text-accent-foreground",
-                )}
-                aria-current={active ? "page" : undefined}
-              >
-                <Icon className="h-5 w-5" aria-hidden="true" />
-                {item.label}
-              </NextLink>
-            );
-          })}
-        </nav>
-        <div className="p-4 border-t border-border">
-          <Button variant="outline" size="sm" onClick={onLogout} className="w-full">
-            <LogOut className="h-4 w-4 mr-2" aria-hidden="true" />
-            Logout
-          </Button>
-        </div>
-      </div>
-    </aside>
+      <div className={className}>{children}</div>
+    </ShellFrame>
   );
 }
+
+export function AdminShell({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user?: ShellUser | null;
+}) {
+  return (
+    <ShellFrame
+      user={user}
+      groups={ADMIN_NAV_GROUPS}
+      brand={{ badge: "A", label: "Persora Admin", homeHref: "/admin" }}
+      mobileTitle="Persora Admin"
+      footerExtra={
+        <NextLink
+          href="/overview"
+          className="flex items-center gap-2 rounded-lg px-2 py-2 text-body-medium font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        >
+          <ArrowLeftRight className="h-4 w-4" aria-hidden="true" />
+          Back to workspace
+        </NextLink>
+      }
+    >
+      {children}
+    </ShellFrame>
+  );
+}
+
+/** @deprecated use WorkspaceShell */
+export const Sidebar = WorkspaceShell;
+/** @deprecated use AdminShell */
+export const AdminSidebar = AdminShell;
