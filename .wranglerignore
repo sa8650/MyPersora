@@ -1,0 +1,12 @@
+# Persora — Wrangler ignore rules
+# Deploy the OpenNext-adapted worker output (.open-next/) and wrangler.toml.
+# Exclude Next.js cache, source files, and development artifacts.
+
+.next/**
+node_modules/**
+.git/**
+.env
+.env.example
+*.md
+migrations/
+docs/

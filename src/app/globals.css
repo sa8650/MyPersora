@@ -1,0 +1,580 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Persora — Design System (ReUI-aligned)
+   Typography source of truth: uploads/typography.txt
+   ========================================================================== */
+
+@layer base {
+  :root {
+    /* Font family (Inter primary) */
+    --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", sans-serif;
+
+    /* ---- Global theme colors ---- */
+    /* Sidebar */
+    --color-sidebar-dark: rgb(23 23 23);
+    --color-sidebar-light: rgb(247 247 247);
+    /* Workspace */
+    --color-workspace-dark: rgb(18 18 18);
+    --color-workspace-light: rgb(255 255 255);
+
+    /* ---- Semantic surface colors ---- */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Primary */
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.625rem;
+
+    /* Sidebar / workspace slots (mode-aware via data-theme) */
+    --sidebar: var(--color-sidebar-light);
+    --sidebar-foreground: var(--foreground);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: var(--accent);
+    --sidebar-accent-foreground: var(--accent-foreground);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+
+    --workspace: var(--color-workspace-light);
+    --workspace-foreground: var(--foreground);
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 222 47% 11%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 221 83% 53%;
+
+    /* Sidebar dark */
+    --sidebar: var(--color-sidebar-dark);
+    --sidebar-foreground: var(--foreground);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: var(--secondary);
+    --sidebar-accent-foreground: var(--secondary-foreground);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+
+    /* Workspace dark */
+    --workspace: var(--color-workspace-dark);
+    --workspace-foreground: var(--foreground);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* ==========================================================================
+   Typography tokens (52 total: 13 families x 4 weights)
+   Naming: text-{family}-{weight}
+   ========================================================================== */
+@layer base {
+  /* --- Large Title (64 / 80) --- */
+  .text-large-title-regular {
+    font-family: var(--font-sans);
+    font-size: 64px;
+    line-height: 80px;
+    font-weight: 400;
+  }
+  .text-large-title-medium {
+    font-family: var(--font-sans);
+    font-size: 64px;
+    line-height: 80px;
+    font-weight: 500;
+  }
+  .text-large-title-semibold {
+    font-family: var(--font-sans);
+    font-size: 64px;
+    line-height: 80px;
+    font-weight: 600;
+  }
+  .text-large-title-bold {
+    font-family: var(--font-sans);
+    font-size: 64px;
+    line-height: 80px;
+    font-weight: 700;
+  }
+
+  /* --- Display 1 (56 / 72) --- */
+  .text-display-1-regular {
+    font-family: var(--font-sans);
+    font-size: 56px;
+    line-height: 72px;
+    font-weight: 400;
+  }
+  .text-display-1-medium {
+    font-family: var(--font-sans);
+    font-size: 56px;
+    line-height: 72px;
+    font-weight: 500;
+  }
+  .text-display-1-semibold {
+    font-family: var(--font-sans);
+    font-size: 56px;
+    line-height: 72px;
+    font-weight: 600;
+  }
+  .text-display-1-bold {
+    font-family: var(--font-sans);
+    font-size: 56px;
+    line-height: 72px;
+    font-weight: 700;
+  }
+
+  /* --- Display 2 (48 / 64) --- */
+  .text-display-2-regular {
+    font-family: var(--font-sans);
+    font-size: 48px;
+    line-height: 64px;
+    font-weight: 400;
+  }
+  .text-display-2-medium {
+    font-family: var(--font-sans);
+    font-size: 48px;
+    line-height: 64px;
+    font-weight: 500;
+  }
+  .text-display-2-semibold {
+    font-family: var(--font-sans);
+    font-size: 48px;
+    line-height: 64px;
+    font-weight: 600;
+  }
+  .text-display-2-bold {
+    font-family: var(--font-sans);
+    font-size: 48px;
+    line-height: 64px;
+    font-weight: 700;
+  }
+
+  /* --- Display 3 (40 / 54) --- */
+  .text-display-3-regular {
+    font-family: var(--font-sans);
+    font-size: 40px;
+    line-height: 54px;
+    font-weight: 400;
+  }
+  .text-display-3-medium {
+    font-family: var(--font-sans);
+    font-size: 40px;
+    line-height: 54px;
+    font-weight: 500;
+  }
+  .text-display-3-semibold {
+    font-family: var(--font-sans);
+    font-size: 40px;
+    line-height: 54px;
+    font-weight: 600;
+  }
+  .text-display-3-bold {
+    font-family: var(--font-sans);
+    font-size: 40px;
+    line-height: 54px;
+    font-weight: 700;
+  }
+
+  /* --- Display 4 (32 / 44) --- */
+  .text-display-4-regular {
+    font-family: var(--font-sans);
+    font-size: 32px;
+    line-height: 44px;
+    font-weight: 400;
+  }
+  .text-display-4-medium {
+    font-family: var(--font-sans);
+    font-size: 32px;
+    line-height: 44px;
+    font-weight: 500;
+  }
+  .text-display-4-semibold {
+    font-family: var(--font-sans);
+    font-size: 32px;
+    line-height: 44px;
+    font-weight: 600;
+  }
+  .text-display-4-bold {
+    font-family: var(--font-sans);
+    font-size: 32px;
+    line-height: 44px;
+    font-weight: 700;
+  }
+
+  /* --- Title 1 (24 / 34) --- */
+  .text-title-1-regular {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    line-height: 34px;
+    font-weight: 400;
+  }
+  .text-title-1-medium {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    line-height: 34px;
+    font-weight: 500;
+  }
+  .text-title-1-semibold {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    line-height: 34px;
+    font-weight: 600;
+  }
+  .text-title-1-bold {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    line-height: 34px;
+    font-weight: 700;
+  }
+
+  /* --- Title 2 (20 / 26) --- */
+  .text-title-2-regular {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    line-height: 26px;
+    font-weight: 400;
+  }
+  .text-title-2-medium {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    line-height: 26px;
+    font-weight: 500;
+  }
+  .text-title-2-semibold {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    line-height: 26px;
+    font-weight: 600;
+  }
+  .text-title-2-bold {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    line-height: 26px;
+    font-weight: 700;
+  }
+
+  /* --- Title 3 (18 / 24-26) --- */
+  .text-title-3-regular {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 25px;
+    font-weight: 400;
+  }
+  .text-title-3-medium {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 25px;
+    font-weight: 500;
+  }
+  .text-title-3-semibold {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 25px;
+    font-weight: 600;
+  }
+  .text-title-3-bold {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 25px;
+    font-weight: 700;
+  }
+
+  /* --- Headline (16 / 22) --- */
+  .text-headline-regular {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 400;
+  }
+  .text-headline-medium {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 500;
+  }
+  .text-headline-semibold {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 600;
+  }
+  .text-headline-bold {
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 700;
+  }
+
+  /* --- Body (14 / 20) --- */
+  .text-body-regular {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+  }
+  .text-body-medium {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+  }
+  .text-body-semibold {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 600;
+  }
+  .text-body-bold {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 700;
+  }
+
+  /* --- Body 2 (13 / 18) --- */
+  .text-body-2-regular {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 400;
+  }
+  .text-body-2-medium {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 500;
+  }
+  .text-body-2-semibold {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 600;
+  }
+  .text-body-2-bold {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 700;
+  }
+
+  /* --- Caption 1 (12 / 16, tracking 0.15px) --- */
+  .text-caption-1-regular {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.15px;
+    font-weight: 400;
+  }
+  .text-caption-1-medium {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.15px;
+    font-weight: 500;
+  }
+  .text-caption-1-semibold {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.15px;
+    font-weight: 600;
+  }
+  .text-caption-1-bold {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.15px;
+    font-weight: 700;
+  }
+
+  /* --- Caption 2 (11 / 15, tracking 0.2px) --- */
+  .text-caption-2-regular {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    line-height: 15px;
+    letter-spacing: 0.2px;
+    font-weight: 400;
+  }
+  .text-caption-2-medium {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    line-height: 15px;
+    letter-spacing: 0.2px;
+    font-weight: 500;
+  }
+  .text-caption-2-semibold {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    line-height: 15px;
+    letter-spacing: 0.2px;
+    font-weight: 600;
+  }
+  .text-caption-2-bold {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    line-height: 15px;
+    letter-spacing: 0.2px;
+    font-weight: 700;
+  }
+}
+
+/* ==========================================================================
+   ReUI base component styles (shadcn/ui-aligned primitives)
+   ========================================================================== */
+@layer base {
+  :root {
+    --radius: 0.625rem;
+  }
+}
+
+@layer components {
+  /* Container / page shell */
+  .reui-page {
+    @apply min-h-screen bg-background text-foreground transition-colors duration-300;
+  }
+
+  /* Card */
+  .reui-card {
+    @apply rounded-xl border border-border bg-card text-card-foreground shadow-sm;
+  }
+
+  /* Badge */
+  .reui-badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+    border-color: var(--border);
+  }
+  .reui-badge-primary {
+    @apply bg-primary text-primary-foreground;
+  }
+  .reui-badge-secondary {
+    @apply bg-secondary text-secondary-foreground;
+  }
+  .reui-badge-destructive {
+    @apply bg-destructive text-destructive-foreground;
+  }
+  .reui-badge-outline {
+    @apply border border-input;
+  }
+
+  /* Button base (shared by components/ui/button.tsx) */
+  .reui-button {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+  .reui-button-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  .reui-button-destructive {
+    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
+  }
+  .reui-button-outline {
+    @apply border border-input bg-background hover:bg-accent hover:bg-accent;
+  }
+  .reui-button-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  .reui-button-ghost {
+    @apply hover:bg-accent hover:text-accent-foreground;
+  }
+  .reui-button-link {
+    @apply text-primary underline-offset-4 hover:underline;
+  }
+  .reui-button-sm {
+    @apply h-8 px-3 text-xs;
+  }
+  .reui-button-default {
+    @apply h-10 px-4 py-2;
+  }
+  .reui-button-lg {
+    @apply h-11 px-8 text-lg;
+  }
+
+  /* Input */
+  .reui-input {
+    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Label */
+  .reui-label {
+    @apply text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  }
+
+  /* Separator */
+  .reui-separator {
+    @apply border-t border-border;
+  }
+
+  /* Scroll area */
+  .reui-scroll-area {
+    @apply overflow-auto;
+  }
+
+  /* Skeleton */
+  .reui-skeleton {
+    @apply rounded-md animate-skeleton-pulse bg-muted;
+  }
+}
+
+/* ==========================================================================
+   Dark mode forced sidebar/workspace overrides via data-theme
+   ========================================================================== */
+[data-theme="dark"] {
+  --sidebar: var(--color-sidebar-dark);
+  --sidebar-foreground: var(--foreground);
+  --workspace: var(--color-workspace-dark);
+  --workspace-foreground: var(--foreground);
+}
